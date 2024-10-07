@@ -17,7 +17,22 @@ function LogoTitle() {
         source={require('./assets/logo.png')}
       />
       <View style={{marginTop: 44}}>
-        <Text style={{fontSize: 20}}>   Hi Twinkle</Text>
+        <Text style={{fontSize: 20, fontWeight: '700'}}>   Hi Twinkle</Text>
+        <Text style={{fontSize: 14}}>Have agrate day a head</Text>
+      </View>
+    </View>
+  );
+}
+
+function LogoTitleRight() {
+  return (
+    <View style={{flexDirection: 'row', paddingLeft: 20}}>
+      <Image
+        style={{ width: 50, height: 50, borderRadius: 50, marginTop: 40, marginRight: 10}}
+        source={require('./assets/logo.png')}
+      />
+      <View style={{marginTop: 44}}>
+        <Text style={{fontSize: 20, fontWeight: '700'}}>   Hi Twinkle</Text>
         <Text style={{fontSize: 14}}>Have agrate day a head</Text>
       </View>
     </View>
@@ -28,7 +43,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {/* <Stack.Screen name="Home" component={Home} /> */}
+        <Stack.Screen name="Home" component={Home} />
         <Stack.Screen 
           name="TaskLists" 
           component={TaskLists}
@@ -46,7 +61,24 @@ export default function App() {
             ),
           }}
         />
-        <Stack.Screen name="TaskDetail" component={TaskDetail} />
+        <Stack.Screen 
+          name="TaskDetail" 
+          component={TaskDetail} 
+          options={{
+            headerTitle: (props) => <LogoTitleRight {...props} />,
+            headerRight: () => (
+              <Image
+                source={require('./assets/Arrow-Left--Streamline-Phosphor.png')}
+                style={{
+                  width: 20,
+                  height: 20,
+                  marginRight: 20,
+                  marginTop: 40,
+                }}
+              />
+            ),
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
