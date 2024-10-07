@@ -1,7 +1,23 @@
 import { View, Image, Text, TextInput, Pressable, StyleSheet } from "react-native";
 import React from "react";
+import { useState, useEffect } from "react";
 
-const Screen1 = () => {
+const login = async (username) => {
+    try {
+        const response = await fetch('https://66ff3a172b9aac9c997e9862.mockapi.io/users?username=' + username);
+        const data = await response.json();
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+const Screen1 = ({navigation}) => {
+    const [username, setUsername] = useState('');
+
+    useEffect(() => {
+        login(username);
+    }, [username]);
+
     return (
         <View style={styles.container}>
             <View style={{flex: 1}}>
@@ -21,7 +37,11 @@ const Screen1 = () => {
                 </Text>
             </View>
             <View style={{flex: 1}}>
-                <TextInput placeholder="Enter your name" style={styles.input}>
+                <TextInput 
+                    placeholder="Enter your name" 
+                    style={styles.input}
+                    onChangeText={setUsername}
+                >
                 </TextInput>
                 <Image
                     source={require("../assets/Mail--Streamline-Feather.png")}
@@ -35,7 +55,12 @@ const Screen1 = () => {
                 ></Image>
             </View>
             <View style={{flex: 1}}>
-                <Pressable style={styles.button}>
+                <Pressable 
+                    style={styles.button}
+                    onPress={() => {
+                        navigation.navigate('TaskLists');
+                        }}
+                    >
                     <Text style={styles.buttonText}>GET STARTED</Text>
                     <Image
                         source={require("../assets/Arrow-Right-Alt-Fill--Streamline-Outlined-Fill---Material-Symbols.png")}
