@@ -2,21 +2,24 @@ import { View, Image, Text, TextInput, Pressable, StyleSheet } from "react-nativ
 import React from "react";
 import { useState, useEffect } from "react";
 
-const login = async (username) => {
-    try {
-        const response = await fetch('https://66ff3a172b9aac9c997e9862.mockapi.io/users?username=' + username);
-        const data = await response.json();
-    } catch (error) {
-        console.error(error);
-    }
-}
-
 const Screen1 = ({navigation}) => {
     const [username, setUsername] = useState('');
+    const [user, setUser] = useState([]);
 
     useEffect(() => {
-        login(username);
-    }, [username]);
+        fetch('https://66ff3a172b9aac9c997e9862.mockapi.io/users?username=' + username)
+        .then(response => response.json())
+        .then(json => setUser(json))
+        .catch(error => console.error(error))
+    }, []);
+
+    function checkUserForLogin() {
+        user.forEach(element => {
+            if (element.username === username) {
+                navigation.navigate('TaskLists', element);
+            }
+        });
+    }
 
     return (
         <View style={styles.container}>
@@ -57,9 +60,7 @@ const Screen1 = ({navigation}) => {
             <View style={{flex: 1}}>
                 <Pressable 
                     style={styles.button}
-                    onPress={() => {
-                        navigation.navigate('TaskLists');
-                        }}
+                    onPress={checkUserForLogin}
                     >
                     <Text style={styles.buttonText}>GET STARTED</Text>
                     <Image
