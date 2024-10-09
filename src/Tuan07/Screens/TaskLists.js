@@ -1,14 +1,41 @@
-import { View, Text, StyleSheet, FlatList, TextInput, Image, Pressable } from "react-native";
-import React, {useEffect, useState} from "react";
+import { View, Text, StyleSheet, FlatList, TextInput, Image, Pressable, Alert } from "react-native";
+import React, {useEffect, useState, useContext} from "react";
+import { ReloadContext } from "../App";
 
-const TaskComponent = ({task}) => {
+const TaskComponent = ({task, navigation, account, deleteTask}) => {
     return (
         <View style={styles.notes}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Image source={require("../assets/Checkbox-Checked--Streamline-Carbon.png")}></Image>
+                <Pressable
+                    onPress={() => {
+                        Alert.alert(
+                            "Delete Task",
+                            "Are you sure you want to delete this task?",
+                            [
+                                {
+                                    text: "Cancel",
+                                    onPress: () => console.log("Cancel Pressed"),
+                                    style: "cancel"
+                                },
+                                {
+                                    text: "OK",
+                                    onPress: () => deleteTask(task.id)
+                                }
+                            ]
+                        );
+                    }}
+                >
+                    <Image source={require("../assets/Checkbox-Checked--Streamline-Carbon.png")}></Image>
+                </Pressable>
                 <Text style={styles.taskTitle}>{task.title}</Text>
             </View>
-            <Image source={require("../assets/Edit-Alt--Streamline-Unicons.png")}></Image>
+            <Pressable
+                onPress={() => {
+                    navigation.navigate('TaskDetail', {task: task, account: account});
+                }}
+            >
+                <Image source={require("../assets/Edit-Alt--Streamline-Unicons.png")}></Image>
+            </Pressable>
         </View>
     );
 }
@@ -28,10 +55,14 @@ function LogoTitle( {account} ) {
     );
 }
 
-
 const TaskLists = ({navigation, route}) => {
-    const account = route.params;
+    const account = route.params.account;
     const [tasks, setTasks] = useState([]);
+    const {reload, setReload} = useContext(ReloadContext);
+
+    console.log(account);
+
+    const task = route.params.task;
 
     const getTasks = async () => {
         try {
@@ -43,10 +74,22 @@ const TaskLists = ({navigation, route}) => {
             console.error(error);
         }
     }
+    
+    const deleteTask = async (id) => {
+        try {
+            const response = await fetch('https://66ff3a172b9aac9c997e9862.mockapi.io/tasks/' + id, {
+                method: 'DELETE'
+            });
+            setReload(prevReload => !prevReload);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
 
     useEffect(() => {
         getTasks();
-    }, [tasks]);
+    }, [reload]);
 
     return (
         <View style={styles.container}>
@@ -80,12 +123,12 @@ const TaskLists = ({navigation, route}) => {
             <View style={{flex: 3, paddingBottom: 30, paddingTop: 10}}>
                 <FlatList
                     data={tasks}
-                    renderItem={({item}) => <TaskComponent task={item}></TaskComponent>}
-                    keyExtractor={item => item.id}
+                    renderItem={({item}) => <TaskComponent task={item} navigation={navigation} account={account} deleteTask={deleteTask}></TaskComponent>}
+                    keyExtractor={(item, index) => index}
                 />
             </View>
             <View style={{flex: 1}}>
-                <Pressable onPress={() => {navigation.navigate('TaskDetail', account)}}>
+                <Pressable onPress={() => {navigation.navigate('TaskDetail', {account: account})}}>
                     <Image
                         source={require("../assets/plus.png")}
                     >

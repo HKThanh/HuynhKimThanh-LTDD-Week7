@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
-import React from 'react';
+import React, {useContext} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './Screens/Home';
@@ -9,26 +9,32 @@ import TaskDetail from './Screens/TaskDetail';
 
 const Stack = createNativeStackNavigator();
 
+export const ReloadContext = React.createContext();
+
 export default function App() {
-  return (
+  const [reload, setReload] = React.useState(false);
+
+  return ( 
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen 
-          name="TaskLists" 
-          component={TaskLists}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen 
-          name="TaskDetail" 
-          component={TaskDetail} 
-          options={{
-            headerShown: false,
-          }}
-        />
-      </Stack.Navigator>
+      <ReloadContext.Provider value={{reload, setReload}}>
+        <Stack.Navigator>
+          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen 
+            name="TaskLists" 
+            component={TaskLists}
+            options={{
+              headerShown: false,
+            }}
+            />
+          <Stack.Screen 
+            name="TaskDetail" 
+            component={TaskDetail} 
+            options={{
+              headerShown: false,
+            }}
+            />
+        </Stack.Navigator>
+      </ReloadContext.Provider>
     </NavigationContainer>
   );
 }

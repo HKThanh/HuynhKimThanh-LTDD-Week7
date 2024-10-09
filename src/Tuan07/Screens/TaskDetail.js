@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, Pressable, Image, TextInput, SafeAreaView } from "react-native";
-import React, {useState, useEffect} from "react";
+import React, {useState, useContext} from "react";
+import { ReloadContext } from "../App";
 
 function LogoTitleRight( {account} ) {
     return (
@@ -17,8 +18,10 @@ function LogoTitleRight( {account} ) {
 }
 
 const TaskDetail = ({navigation, route}) => {
-    const account = route.params;
-    const [tasks, setTasks] = useState('');
+    const account = route.params.account;
+    const task = route.params.task;
+    const {reload, setReload} = useContext(ReloadContext);
+    const [tasks, setTasks] = useState(task === undefined ? '' : task.title);
 
     const addTask = async () => {
         if (tasks === '') {
@@ -38,24 +41,52 @@ const TaskDetail = ({navigation, route}) => {
                 })
             });
             const json = await response.json();
-            console.log(json);
+            setReload(prevReload => !prevReload);
         }
         catch (error) {
             console.error(error);
         }
     }
 
-    const showMessageWhenAtTaskSuccess = () => {
-        addTask();
+    const updateTask = async () => {
+
+        try {
+            const response = await fetch('https://66ff3a172b9aac9c997e9862.mockapi.io/tasks/' + task.id, {
+                method: 'PUT',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: tasks,
+                })
+            });
+            const json = await response.json();
+            console.log(json);
+            setReload(prevReload => !prevReload);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    const showMessageWhenTaskSuccess = () => {
+        if (task === undefined) {
+            addTask();
+        } else {
+            updateTask();
+        }
         alert('Task added successfully');
-        navigation.navigate('TaskLists', account);
+        navigation.navigate('TaskLists', {account: account, task: task});
     }
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <LogoTitleRight account={account}></LogoTitleRight>
-                <Pressable onPress={() => {navigation.navigate('TaskLists', account)}}>
+                <Pressable 
+                    onPress={() => {navigation.navigate('TaskLists', {account: account, task: task})}}
+                >
                     <Image
                         source={require('../assets/Arrow-Left--Streamline-Phosphor.png')}
                         style={{width: 30, height: 20, marginTop: 30, marginLeft: 60}}
@@ -68,8 +99,10 @@ const TaskDetail = ({navigation, route}) => {
             </View>
                 <View style={{flex: 0.1, alignItems: 'center'}}>
                 <TextInput 
-                    style={styles.inputText} placeholder="Input your task"
+                    style={styles.inputText} 
+                    placeholder="Input your task"
                     onChangeText={setTasks}
+                    value={tasks}
                 >
                 </TextInput>
                 <Image 
@@ -81,10 +114,12 @@ const TaskDetail = ({navigation, route}) => {
             <View style={{flex: 0.5, alignItems: 'center', justifyContent: 'center'}}>
                 <Pressable 
                     style={styles.button}
-                    onPress={showMessageWhenAtTaskSuccess}
+                    onPress={showMessageWhenTaskSuccess}
                 >
                     <Text style={styles.buttonText}>FINISH</Text>
-                    <Image source={require("../assets/Arrow-Right-Alt-Fill--Streamline-Outlined-Fill---Material-Symbols.png")}></Image>
+                    <Image 
+                        source={require("../assets/Arrow-Right-Alt-Fill--Streamline-Outlined-Fill---Material-Symbols.png")}
+                    ></Image>
                 </Pressable>
             </View>
             <View style={{flex: 1, justifyContent: 'center'}}>

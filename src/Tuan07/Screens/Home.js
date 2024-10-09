@@ -16,12 +16,13 @@ const Screen1 = ({navigation}) => {
     function checkUserForLogin() {
         user.forEach(element => {
             if (element.username === username) {
-                navigation.navigate('TaskLists', element);
+                navigation.navigate('TaskLists',  {account: element});
             }
         });
     }
 
     return (
+
         <View style={styles.container}>
             <View style={{flex: 1}}>
                 <Image 
