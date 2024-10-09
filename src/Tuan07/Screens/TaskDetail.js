@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Pressable, Image, TextInput, SafeAreaView } from "react-native";
-import React from "react";
+import React, {useState, useEffect} from "react";
 
 function LogoTitleRight( {account} ) {
     return (
@@ -18,6 +18,38 @@ function LogoTitleRight( {account} ) {
 
 const TaskDetail = ({navigation, route}) => {
     const account = route.params;
+    const [tasks, setTasks] = useState('');
+
+    const addTask = async () => {
+        if (tasks === '') {
+            alert('Please input your task');
+            return
+        }
+
+        try {
+            const response = await fetch('https://66ff3a172b9aac9c997e9862.mockapi.io/tasks', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: tasks,
+                })
+            });
+            const json = await response.json();
+            console.log(json);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    const showMessageWhenAtTaskSuccess = () => {
+        addTask();
+        alert('Task added successfully');
+        navigation.navigate('TaskLists', account);
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -35,7 +67,11 @@ const TaskDetail = ({navigation, route}) => {
                 <Text style={styles.title}>ADD YOUR JOB</Text>
             </View>
                 <View style={{flex: 0.1, alignItems: 'center'}}>
-                <TextInput style={styles.inputText} placeholder="Input your task"></TextInput>
+                <TextInput 
+                    style={styles.inputText} placeholder="Input your task"
+                    onChangeText={setTasks}
+                >
+                </TextInput>
                 <Image 
                     source={require("../assets/Checkbox-Checked--Streamline-Carbon.png")}
                     style={{width: 20, height: 20, position: 'absolute', top: 20, left: 10}}
@@ -43,7 +79,10 @@ const TaskDetail = ({navigation, route}) => {
                 </Image>
             </View>
             <View style={{flex: 0.5, alignItems: 'center', justifyContent: 'center'}}>
-                <Pressable style={styles.button}>
+                <Pressable 
+                    style={styles.button}
+                    onPress={showMessageWhenAtTaskSuccess}
+                >
                     <Text style={styles.buttonText}>FINISH</Text>
                     <Image source={require("../assets/Arrow-Right-Alt-Fill--Streamline-Outlined-Fill---Material-Symbols.png")}></Image>
                 </Pressable>

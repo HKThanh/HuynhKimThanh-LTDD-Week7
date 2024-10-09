@@ -46,7 +46,7 @@ const TaskLists = ({navigation, route}) => {
 
     useEffect(() => {
         getTasks();
-    }, []);
+    }, [tasks]);
 
     return (
         <View style={styles.container}>
@@ -77,8 +77,8 @@ const TaskLists = ({navigation, route}) => {
                 >
                 </TextInput>
             </View>
-            <View style={{flex: 3}}>
-                <FlatList 
+            <View style={{flex: 3, paddingBottom: 30, paddingTop: 10}}>
+                <FlatList
                     data={tasks}
                     renderItem={({item}) => <TaskComponent task={item}></TaskComponent>}
                     keyExtractor={item => item.id}
