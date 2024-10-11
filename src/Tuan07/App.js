@@ -6,10 +6,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './Screens/Home';
 import TaskLists from './Screens/TaskLists';
 import TaskDetail from './Screens/TaskDetail';
+import { ReloadContext } from './context';
 
 const Stack = createNativeStackNavigator();
-
-export const ReloadContext = React.createContext();
 
 export default function App() {
   const [reload, setReload] = React.useState(false);

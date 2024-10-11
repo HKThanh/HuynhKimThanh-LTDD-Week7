@@ -1,44 +1,7 @@
 import { View, Text, StyleSheet, FlatList, TextInput, Image, Pressable, Alert } from "react-native";
 import React, {useEffect, useState, useContext} from "react";
-import { ReloadContext } from "../App";
-
-const TaskComponent = ({task, navigation, account, deleteTask}) => {
-    return (
-        <View style={styles.notes}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Pressable
-                    onPress={() => {
-                        Alert.alert(
-                            "Delete Task",
-                            "Are you sure you want to delete this task?",
-                            [
-                                {
-                                    text: "Cancel",
-                                    onPress: () => console.log("Cancel Pressed"),
-                                    style: "cancel"
-                                },
-                                {
-                                    text: "OK",
-                                    onPress: () => deleteTask(task.id)
-                                }
-                            ]
-                        );
-                    }}
-                >
-                    <Image source={require("../assets/Checkbox-Checked--Streamline-Carbon.png")}></Image>
-                </Pressable>
-                <Text style={styles.taskTitle}>{task.title}</Text>
-            </View>
-            <Pressable
-                onPress={() => {
-                    navigation.navigate('TaskDetail', {task: task, account: account});
-                }}
-            >
-                <Image source={require("../assets/Edit-Alt--Streamline-Unicons.png")}></Image>
-            </Pressable>
-        </View>
-    );
-}
+import { ReloadContext } from "../context";
+import { TaskComponent } from "../utils/TaskComponent";
 
 function LogoTitle( {account} ) {
     return (
@@ -59,10 +22,6 @@ const TaskLists = ({navigation, route}) => {
     const account = route.params.account;
     const [tasks, setTasks] = useState([]);
     const {reload, setReload} = useContext(ReloadContext);
-
-    console.log(account);
-
-    const task = route.params.task;
 
     const getTasks = async () => {
         try {
@@ -123,7 +82,7 @@ const TaskLists = ({navigation, route}) => {
             <View style={{flex: 3, paddingBottom: 30, paddingTop: 10}}>
                 <FlatList
                     data={tasks}
-                    renderItem={({item}) => <TaskComponent task={item} navigation={navigation} account={account} deleteTask={deleteTask}></TaskComponent>}
+                    renderItem={({item}) => <TaskComponent task={item} navigation={navigation} account={account} deleteTask={deleteTask} />}
                     keyExtractor={(item, index) => index}
                 />
             </View>
@@ -152,23 +111,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderWidth: 1,
         paddingLeft: 44
-    },
-    notes: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        width: 334,
-        height: 48,
-        borderRadius: 24,
-        backgroundColor: '#171A1F26',
-        paddingLeft: 24,
-        paddingRight: 24,
-        marginTop: 10,
-    },
-    taskTitle: {
-        fontSize: 14,
-        width: 220,
-        marginLeft: 10
     }
 });
 

@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Pressable, Image, TextInput, SafeAreaView } from "react-native";
 import React, {useState, useContext} from "react";
-import { ReloadContext } from "../App";
+import { ReloadContext } from "../context";
 
 function LogoTitleRight( {account} ) {
     return (
